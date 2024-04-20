@@ -1,0 +1,33 @@
+/* src/index.css */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Tailwind CSS can be used for other styles */
+
+.color-history {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .color-history-item {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+  }
+  
+  .diagonal-stripes {
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(0, 0, 0, 0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.1) 75%);
+    background-size: 20px 20px; /* Adjust the size of the stripes as needed */
+  }
+  
