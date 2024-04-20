@@ -36,7 +36,7 @@ const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageS
       {backgroundImage && ( // Only render if there is a background image
         <div className="mt-4">
           <label htmlFor="imageSizeInput" className="block text-sm font-medium text-gray-700">
-            Background Image Size
+            Image Size
           </label>
           <div className="flex items-center">
            
