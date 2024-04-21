@@ -1,15 +1,18 @@
 import React, { useState, useRef } from "react";
-import { ChromePicker } from "react-color";
+import PickColor from "react-pick-color";
 
 const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageSize, backgroundImage }) => {
   const [selectedColors, setSelectedColors] = useState([]);
-  const chromePickerRef = useRef(null);
+  const [sketchColors, setSketchColors] = useState([]);
+  const [documentColors, setDocumentColors] = useState([]);
+  const [presetColors, setPresetColors] = useState(["#ff0000", "#00ff00", "#0369A1"]); // Initial personal color is black
+  const colorPickerRef = useRef(null);
 
   const addColor = (color) => {
     // Check if the color already exists in selectedColors
     if (!selectedColors.includes(color)) {
       // Limiting to 5 recent colors
-      const updatedColors = [color, ...selectedColors];
+      const updatedColors = [color, ...selectedColors.slice(0, 4)]; // Only keep 5 recent colors
       setSelectedColors(updatedColors);
       setBackgroundColor(color);
     }
@@ -20,7 +23,7 @@ const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageS
     setSelectedColors(newColors);
   };
 
-  const handleColorClick = (color) => {
+  const handleColorChange = (color) => {
     setBackgroundColor(color);
   };
 
@@ -28,8 +31,25 @@ const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageS
     setImageSize(parseInt(event.target.value));
   };
 
-  // Calculate percentage value of background image size and round to remove decimals
-  const imageSizePercentage = Math.round(((imageSize - 50) / 150) * 100);
+  const handleSketchColor = (color) => {
+    // Add sketched color to the sketchColors array
+    setSketchColors([...sketchColors, color]);
+  };
+
+  const addDocumentColor = (color) => {
+    // Add color to the document colors array
+    setDocumentColors([...documentColors, color]);
+  };
+
+  const handlePersonalColorChange = (color) => {
+    // Set personal color    
+    // setPersonalColor(color);
+  };
+
+  const handleAddColor = () => {
+    // Add color selected in the picker
+    setPresetColors([...presetColors, backgroundColor]); // Push the new color to presetColors array
+  };
 
   return (
     <div className="mt-4">
@@ -39,7 +59,6 @@ const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageS
             Image Size
           </label>
           <div className="flex items-center">
-           
             <input
               type="range"
               id="imageSizeInput"
@@ -49,44 +68,41 @@ const ColorPicker = ({ backgroundColor, setBackgroundColor, imageSize, setImageS
               value={imageSize}
               onChange={handleSizeChange}
             />
-            <span className="text-sm text-gray-600 ml-2">{`${imageSizePercentage}%`}</span> {/* Display percentage */}
+            <span className="text-sm text-gray-600 ml-2">{`${imageSize}%`}</span> {/* Display percentage */}
           </div>
         </div>
       )}
       <h2 className="text-lg font-bold mb-2">Background Color</h2>
       <div className="color-picker-wrapper relative">
-        <button
-          className="color-picker-button absolute top-0 right-0 flex items-center justify-center w-10 h-10 rounded-full bg-blue-500 text-white text-xl font-bold shadow-md"
-          style={{ right: "-50px" }}
-          onClick={() => addColor(backgroundColor)}
-        >
-          +
-        </button>
-        <ChromePicker
-          ref={chromePickerRef}
+        <PickColor
           color={backgroundColor}
-          onChange={(color) => setBackgroundColor(color.hex)}
-          disableAlpha={true}
+          onChange={(color) => handleColorChange(color.hex)}
           className="rounded-lg shadow-md"
           width={300}
+          colorList={selectedColors} // Set the color list
+          onDelete={(color) => removeColor(color)} // Handle color deletion
+          presetColors={presetColors} // Set preset colors
+          onSketchColor={(color) => handleSketchColor(color)} // Handle sketch color
+          documentColors={documentColors} // Set document colors
+          onDocumentColor={(color) => addDocumentColor(color)} // Handle document color
+          personalColor={presetColors} // Set personal color
+          onPersonalColorChange={(color) => handlePersonalColorChange(color)} // Handle personal color change
         />
-        <div className="mt-2 grid grid-cols-2 gap-4 overflow-auto border rounded-md border-gray-300 shadow-md max-h-200px">
-          {selectedColors.map((color, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <div
-                className="w-12 h-12 rounded-full mr-2 cursor-pointer border-2 border-white"
-                onClick={() => handleColorClick(color)}
-                style={{ backgroundColor: color, backgroundImage: `url(${color})`, backgroundSize: `${imageSize}%`, backgroundPosition: 'center' }}
-              ></div>
-              <span className="text-gray-700">{color}</span>
-              <button
-                onClick={() => removeColor(color)}
-                className="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300"
-              >
-                -
-              </button>
-            </div>
+        <div className="flex items-center mt-2">
+          {presetColors.map((color, index) => (
+            <button
+              key={index}
+              className="w-8 h-8 mr-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              style={{ backgroundColor: color }}
+              onClick={() => handleColorChange(color)}
+            ></button>
           ))}
+          <button
+            className="w-8 h-8 rounded-full bg-gray-300 border border-gray-200 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-gray-300"
+            onClick={handleAddColor} // Call handleAddColor function on click
+          >
+            +
+          </button>
         </div>
       </div>
     </div>
